@@ -1,7 +1,7 @@
 #ifndef PIN_CONFIG_H
 #define PIN_CONFIG_H
 
-// Pin declarations for components
+// Pin declarations for each component
 #define DC_MOTOR_PIN1 9
 #define DC_MOTOR_PIN2 8
 #define DC_MOTOR_ENABLE 7
