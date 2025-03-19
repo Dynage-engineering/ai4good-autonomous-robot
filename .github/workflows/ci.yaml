@@ -1,0 +1,34 @@
+name: PlatformIO CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: |
+          python -m venv ~/.platformio/penv
+          source ~/.platformio/penv/bin/activate
+          pip install --upgrade pip
+          pip install platformio
+
+      - name: Build PlatformIO Project
+        run: |
+          source ~/.platformio/penv/bin/activate
+          pio run
