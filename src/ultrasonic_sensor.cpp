@@ -1,10 +1,9 @@
 #include <Arduino.h>
 #include "autonomous_robot/ultrasonic_sensor.h"
+# include "pin_config.h"
 
-UltrasonicSensor::UltrasonicSensor(int triggerPin, int echoPin)
+UltrasonicSensor::UltrasonicSensor(int triggerPin = ULTRASONIC_TRIGGER_PIN , int echoPin = ULTRASONIC_ECHO_PIN)
     : triggerPin_(triggerPin), echoPin_(echoPin) {
-    pinMode(triggerPin_, OUTPUT);
-    pinMode(echoPin_, INPUT);
 }
 
 float UltrasonicSensor::getDistance() {

@@ -1,11 +1,10 @@
 #include "autonomous_robot/dc_motor.h"
 #include <Arduino.h>
+#include "pin_config.h" 
 
-DCMotor::DCMotor(int enablePin, int in1Pin, int in2Pin)
+
+DCMotor::DCMotor(int enablePin = DC_MOTOR_ENABLE, int in1Pin = DC_MOTOR_PIN1, int in2Pin = DC_MOTOR_PIN2)
     : enablePin_(enablePin), in1Pin_(in1Pin), in2Pin_(in2Pin) {
-    pinMode(enablePin_, OUTPUT);
-    pinMode(in1Pin_, OUTPUT);
-    pinMode(in2Pin_, OUTPUT);
     stop();  // Initialize motor in stopped state
 }
 
