@@ -1,13 +1,9 @@
 #include <Arduino.h>
 #include "autonomous_robot/color_sensor.h"
+#include "pin_config.h"
 
-ColorSensor::ColorSensor(int s0, int s1, int s2, int s3, int out)
+ColorSensor::ColorSensor(int s0 = COLOR_SENSOR_S0, int s1 = COLOR_SENSOR_S1, int s2 = COLOR_SENSOR_S2, int s3 = COLOR_SENSOR_S3 ,int out = COLOR_SENSOR_OUT)
     : s0_(s0), s1_(s1), s2_(s2), s3_(s3), out_(out) {
-    pinMode(s0_, OUTPUT);
-    pinMode(s1_, OUTPUT);
-    pinMode(s2_, OUTPUT);
-    pinMode(s3_, OUTPUT);
-    pinMode(out_, INPUT);
     digitalWrite(s0_, HIGH);
     digitalWrite(s1_, LOW);
 }
