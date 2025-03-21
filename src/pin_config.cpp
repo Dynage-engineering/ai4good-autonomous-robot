@@ -19,10 +19,10 @@ void initializePins() {
     pinMode(COLOR_SENSOR_OUT, INPUT);
 
     // Gripper servo pins
-    pinMode(GRIPPER_SERVO_PIN1, OUTPUT);
-    pinMode(GRIPPER_SERVO_PIN2, OUTPUT);
-    pinMode(GRIPPER_SERVO_PIN3, OUTPUT);
-    pinMode(GRIPPER_SERVO_PIN4, OUTPUT);
+    pinMode(GRIPPER_PICKER, OUTPUT);
+    pinMode(GRIPPER_ELBOW, OUTPUT);
+    pinMode(GRIPPER_SHOULDER, OUTPUT);
+    pinMode(GRIPPER_WAIST, OUTPUT);
 
     // Steering servo pin
     pinMode(STEERING_SERVO_PIN, OUTPUT);

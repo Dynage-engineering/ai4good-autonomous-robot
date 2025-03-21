@@ -3,7 +3,7 @@
 #include "pin_config.h" 
 
 
-GripperControl::GripperControl(int pin1 = GRIPPER_SERVO_PIN1, int pin2 = GRIPPER_SERVO_PIN2, int pin3 = GRIPPER_SERVO_PIN3, int pin4 = GRIPPER_SERVO_PIN4) {
+GripperControl::GripperControl(int pin1 = GRIPPER_PICKER, int pin2 = GRIPPER_ELBOW, int pin3 = GRIPPER_SHOULDER, int pin4 = GRIPPER_WAIST) {
     servo1_.attach(pin1);
     servo2_.attach(pin2);
     servo3_.attach(pin3);
