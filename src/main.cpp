@@ -19,7 +19,7 @@ const unsigned int MOTOR_IN2 = DC_MOTOR_PIN2;
 const unsigned int MOTOR_EN = DC_MOTOR_ENABLE;
 
 // Create one rearMotor instance.
-L298N rearMotor(MOTOR_EN, MOTOR_IN1, MOTOR_IN2);
+L298N rearMotor(MOTOR_EN, MOTOR_IN1, MOTOR_IN2)\;
 
 
 // Servo
@@ -101,7 +101,7 @@ void loop()
 Print some informations in Serial Monitor
 */
 void detect_Obstacle(){
-if (digitalRead(ULTRASONIC_TRIGGER_PIN)==HIGH;){
+if (digitalRead(ULTRASONIC_TRIGGER_PIN)==HIGH){
   rearMotor.stop();
   delay(500);
   rearMotor.backward();
