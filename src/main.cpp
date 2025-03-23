@@ -79,7 +79,7 @@ void setup()
   }
 
   //  initial speed and Position
-  rearMotor.setSpeed(120);
+  rearMotor.setSpeed(255);
   Serial.println("Moving servos to initial positions...");
 //   steering.write(85);  // Move steering servo to 80 degrees
 //   gripper.write(120);   // Move gripper servo to 120 degrees
