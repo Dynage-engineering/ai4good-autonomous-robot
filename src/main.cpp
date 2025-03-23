@@ -1,143 +1,115 @@
 #include <Arduino.h>
-#include <L298N.h>
+
 #include <ESP32Servo.h>
-#include <tcs3200.h>
-#include "pin_config.h"
 
+Servo gripper,shoulder,steering;      // Create a servo object
+int gripperPin = 26;   // Servo control pin
+int shoulderPin =25;
+int steeringPin = 27;
+int minAngle1 = 0;   // Minimum angle
+int maxAngle1 = 160; // Maximum angle
+int stepDelay = 15; // Delay between steps (milliseconds)
+int minAngle2 = 20;   // Minimum angle
+int maxAngle2 = 140;
+int IN1= 22;
+int IN2 =23;
+int en=21;
 
-//  Color Sensor
-#include <tcs3200.h>
-
-int red, green, blue, white;
-
-tcs3200 tcs(18, 5, 17, 4, 16); // (S0, S1, S2, S3, output pin)
-
-
-//  Motor Pin definition
-const unsigned int MOTOR_IN1 = DC_MOTOR_PIN1;
-const unsigned int MOTOR_IN2 = DC_MOTOR_PIN2;
-const unsigned int MOTOR_EN = DC_MOTOR_ENABLE;
-
-// Create one rearMotor instance.
-L298N rearMotor(MOTOR_EN, MOTOR_IN1, MOTOR_IN2)\;
-
-
-// Servo
-Servo steering;
-Servo gripper;
-Servo elbow;
-Servo shoulder;
-Servo waist;
-
-int steeringPin = STEERING_SERVO_PIN;
-int gripperPin = GRIPPER_PICKER;
-int elbowPin = GRIPPER_ELBOW;
-int shoulderPin = GRIPPER_SHOULDER;
-int waistPin = GRIPPER_SHOULDER;
-
-
-#define LED 2
-
-
-void printSomeInfo();
-
-void pickBlock();
-
-void dropBlock();
-
-void setup()
-{
-  // Used to display information
-  Serial.begin(115200);
-  pinMode(LED, OUTPUT);
-  pinMode(ULTRASONIC_TRIGGER_PIN,INPUT);
-  steering.attach(steeringPin);
-  gripper.attach(gripperPin);
-  elbow.attach(elbowPin);
+void setup() {
+  gripper.attach(gripperPin);  // Attaches the servo to the specified pin
   shoulder.attach(shoulderPin);
-  waist.attach(waistPin);
+  steering.attach(steeringPin);
+  Serial.begin(9600);        // Initialize serial communication
 
-  // Wait for Serial Monitor to be opened
-  while (!Serial)
-  {
-    //do nothing
+  steering.write(85);
+  gripper.write(120);
+  pinMode(IN1,OUTPUT);
+  pinMode(IN2,OUTPUT);
+}
+
+void open() {
+  // Sweep from min to max
+  Serial.println("Sweeping from min to max");
+  for (int angle = minAngle1; angle <= maxAngle1; angle++) {
+    gripper.write(angle);
+    delay(stepDelay);
   }
-
-  //  initial speed and Position
-  rearMotor.setSpeed(150);
-  Serial.println("Moving servos to initial positions...");
-  steering.write(85);  // Move steering servo to 80 degrees
-  gripper.write(120);   // Move gripper servo to 120 degrees
-  // elbow.write(0);    // Move elbow servo to 120 degrees
-  shoulder.write(90);  // Move shoulder servo to 60 degrees
-  waist.write(90);     // Move waist servo to 90 degrees
-}
-
-void loop()
-{
-  digitalWrite(LED, HIGH);
-  delay(00);
-  digitalWrite(LED, LOW);
-  delay(500);
-  printSomeInfo();
-
-
-  rearMotor.forward();
-  delay(200);
-  pickBlock();
-  delay(300);
-  rearMotor.backward();
-  delay(500);
-  steering.write(30);
-  rearMotor.forward();
-  dropBlock();
-  rearMotor.stop();
-  delay(1000);
-  printSomeInfo();
-  rearMotor.setSpeed(0);
-}
-
-/*
-Print some informations in Serial Monitor
-*/
-void detect_Obstacle(){
-if (digitalRead(ULTRASONIC_TRIGGER_PIN)==HIGH){
-  rearMotor.stop();
-  delay(500);
-  rearMotor.backward();
-  delay(500);
-  rearMotor.stop();
-  delay(200);
-
-}
-}
-void pickBlock()
-  {
-    // pick an item
-    waist.write(0);
-    delay(500);
-    shoulder.write(180);
-    delay(500);
-    gripper.write(0);
-    delay(500);
-  }
-
-  void dropBlock(){
-    // drop an item
-    shoulder.write(90); // raise item
-    delay(500);
-    gripper.write(120); // open gripper
-    delay(500);
   
+  delay(500);  // Pause at max position
+}
+void close(){ 
+  // Sweep from max to min
+  Serial.println("Sweeping from max to min");
+  for (int angle = maxAngle1; angle >= minAngle1; angle--) {
+    gripper.write(angle);
+    delay(stepDelay);
   }
-  void printSomeInfo()
-{
-  Serial.print("rearMotor is moving = ");
-  Serial.print(rearMotor.isMoving());
-  Serial.print(" at speed = ");
-  Serial.println(rearMotor.getSpeed());
-  Serial.print("Servo is moving = ");
-  Serial.print(steering.read());
-  Serial.print(" at speed = ");
-  Serial.println(steering.readTicks());
+  
+  delay(500);  // Pause at min position
+}
+void extender_up() {
+  Serial.println("Sweeping from max to min");
+  for (int angle = maxAngle2; angle >= minAngle2; angle--) {
+   shoulder.write(angle);
+    delay(stepDelay);
+  }
+  
+  delay(500);
+}
+void extender_down(){
+  // Sweep from min to max
+  Serial.println("Sweeping from min to max");
+  for (int angle = minAngle1; angle <= maxAngle1; angle++) {
+    shoulder.write(angle);
+    delay(stepDelay);
+  }
+  
+  delay(500);  // Pause at max position
+  
+  // Sweep from max to min
+    // Pause at min position
+}
+void pickblock_drop(){
+  open();
+  delay(1000);
+  extender_down();
+  delay(1000);
+  close();
+  delay(1000);
+  extender_up();
+  delay(1000);
+}
+void forward(int speed = 150){
+analogWrite(en,speed);
+digitalWrite(IN1,HIGH);
+digitalWrite(IN2,LOW);
+}
+void backward(int speed = 150){
+  analogWrite(en,speed);
+  digitalWrite(IN2,HIGH);
+  digitalWrite(IN1,LOW);
+  }
+
+void stop(){
+    analogWrite(en,150);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN1,LOW);
+    }
+void loop(){
+forward();
+delay(300);
+stop();
+delay(500);
+pickblock_drop();
+delay(500);
+backward();
+delay(300);
+
+steering.write(30); // turn left
+delay(500);
+forward(200);
+delay(1000);
+stop();
+delay(500);
+open();
 }
