@@ -23,7 +23,7 @@ void robotDefault(){
   waist.attach(waistPin);
   Serial.begin(9600);        // Initialize serial communication
 
-  steering.write(90);
+  steering.write(80);
   gripper.write(120);
   waist.write(90);
   pinMode(IN1,OUTPUT);
@@ -117,26 +117,25 @@ void stop(){
     digitalWrite(IN1,LOW);
 }
 void loop(){
-forward();
-delay(200);
-stop();
-delay(200);
-pickblock_drop();
-delay(400);
-backward();
-delay(500);
+ forward();
+ delay(1000);
+ backward();
+ delay(500);
+ stop();
+  delay(2000);
+  extender_down();
+  delay(500);
+  open();
+  delay(200);
+  close();
+  delay(500);
+  extender_up();
+  delay(500);
+  open();
+  delay(500);
 
-steering.write(20); // turn left
-delay(500);
-forward(240);
-delay(1000);
 
-stop();
-delay(100);
-waist_turn(200) ;
-delay(500);
-extender_down();
+ 
 
-delay(500);
-open();
+
 }
