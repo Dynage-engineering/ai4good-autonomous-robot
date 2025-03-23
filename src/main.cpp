@@ -50,7 +50,7 @@ void setup()
   // Used to display information
   Serial.begin(115200);
   pinMode(LED, OUTPUT);
-
+  pinMode(ULTRASONIC_TRIGGER_PIN,INPUT);
   steering.attach(steeringPin);
   gripper.attach(gripperPin);
   elbow.attach(elbowPin);
@@ -65,22 +65,27 @@ void setup()
 
   //  initial speed and Position
   rearMotor.setSpeed(150);
-  setServoDefault();
-  delay(500);
+  Serial.println("Moving servos to initial positions...");
+  steering.write(85);  // Move steering servo to 80 degrees
+  gripper.write(120);   // Move gripper servo to 120 degrees
+  // elbow.write(0);    // Move elbow servo to 120 degrees
+  shoulder.write(90);  // Move shoulder servo to 60 degrees
+  waist.write(90);     // Move waist servo to 90 degrees
 }
 
 void loop()
 {
   digitalWrite(LED, HIGH);
-  delay(100);
+  delay(00);
   digitalWrite(LED, LOW);
-  delay(100);
+  delay(500);
   printSomeInfo();
 
+
   rearMotor.forward();
-  delay(50);
-  pickBlock();
   delay(200);
+  pickBlock();
+  delay(300);
   rearMotor.backward();
   delay(500);
   steering.write(30);
@@ -95,8 +100,19 @@ void loop()
 /*
 Print some informations in Serial Monitor
 */
+void detect_Obstacle(){
+if (digitalRead(ULTRASONIC_TRIGGER_PIN)==HIGH;){
+  rearMotor.stop();
+  delay(500);
+  rearMotor.backward();
+  delay(500);
+  rearMotor.stop();
+  delay(200);
 
-void pickBlock() {
+}
+}
+void pickBlock()
+  {
     // pick an item
     waist.write(0);
     delay(500);
@@ -104,17 +120,7 @@ void pickBlock() {
     delay(500);
     gripper.write(0);
     delay(500);
-}
-
-void setServoDefault(){
-  Serial.println("Moving servos to initial positions...");
-  steering.write(85);  // Move steering servo to 80 degrees
-  gripper.write(120);   // Move gripper servo to 120 degrees
-  // elbow.write(0);    // Move elbow servo to 120 degrees
-  shoulder.write(90);  // Move shoulder servo to 60 degrees
-  waist.write(90);     // Move waist servo to 90 degrees
-
-}
+  }
 
   void dropBlock(){
     // drop an item
@@ -122,8 +128,10 @@ void setServoDefault(){
     delay(500);
     gripper.write(120); // open gripper
     delay(500);
+  
   }
-void printSomeInfo() {
+  void printSomeInfo()
+{
   Serial.print("rearMotor is moving = ");
   Serial.print(rearMotor.isMoving());
   Serial.print(" at speed = ");
