@@ -45,6 +45,16 @@ void pickBlock();
 
 void dropBlock();
 
+void setServoDefault(){
+  Serial.println("Moving servos to initial positions...");
+  steering.write(85);  // Move steering servo to 80 degrees
+  gripper.write(120);   // Move gripper servo to 120 degrees
+  // elbow.write(0);    // Move elbow servo to 120 degrees
+  shoulder.write(90);  // Move shoulder servo to 60 degrees
+  waist.write(90);     // Move waist servo to 90 degrees
+
+}
+
 void setup()
 {
   // Used to display information
@@ -65,12 +75,7 @@ void setup()
 
   //  initial speed and Position
   rearMotor.setSpeed(150);
-  Serial.println("Moving servos to initial positions...");
-  steering.write(85);  // Move steering servo to 80 degrees
-  gripper.write(120);   // Move gripper servo to 120 degrees
-  // elbow.write(0);    // Move elbow servo to 120 degrees
-  shoulder.write(90);  // Move shoulder servo to 60 degrees
-  waist.write(90);     // Move waist servo to 90 degrees
+  setServoDefault();
 }
 
 void loop()
@@ -101,7 +106,7 @@ void loop()
 Print some informations in Serial Monitor
 */
 void detect_Obstacle(){
-if (digitalRead(ULTRASONIC_TRIGGER_PIN)==HIGH;){
+if ( digitalRead(ULTRASONIC_TRIGGER_PIN) ==HIGH ){
   rearMotor.stop();
   delay(500);
   rearMotor.backward();
