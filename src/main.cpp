@@ -5,9 +5,6 @@
 #include "pin_config.h"
 
 
-//  Color Sensor
-#include <tcs3200.h>
-
 int red, green, blue, white;
 
 tcs3200 tcs(18, 5, 17, 4, 16); // (S0, S1, S2, S3, output pin)
