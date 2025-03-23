@@ -1,78 +1,124 @@
 #include <Arduino.h>
-#include "autonomous_robot/dc_motor.h"
-#include "autonomous_robot/ultrasonic_sensor.h"
-#include "autonomous_robot/color_sensor.h"
-#include "autonomous_robot/gripper_control.h"
-#include "autonomous_robot/steering_control.h"
+#include <L298N.h>
+#include <ESP32Servo.h>
+#include <tcs3200.h>
 #include "pin_config.h"
 
-// Instantiate components
-DCMotor rearMotor(DC_MOTOR_ENABLE, DC_MOTOR_PIN1, DC_MOTOR_PIN2);
-UltrasonicSensor ultrasonicSensor(ULTRASONIC_TRIGGER_PIN, ULTRASONIC_ECHO_PIN);
-ColorSensor colorSensor(COLOR_SENSOR_S0, COLOR_SENSOR_S1, COLOR_SENSOR_S2, COLOR_SENSOR_S3, COLOR_SENSOR_OUT);
-GripperControl gripper(GRIPPER_PICKER, GRIPPER_ELBOW, GRIPPER_SHOULDER, GRIPPER_WAIST);
-SteeringControl steering(STEERING_SERVO_PIN);
 
-void setup() {
-    Serial.begin(115200);
-    initializePins();  // Initialize all pins
+//  Color Sensor
+#include <tcs3200.h>
 
-    // Ensure components are in a safe state
-    rearMotor.stop();
-    gripper.close();
-    steering.setAngle(90);  // Set steering to neutral position
+int red, green, blue, white;
+
+tcs3200 tcs(18, 5, 17, 4, 16); // (S0, S1, S2, S3, output pin)
+
+
+//  Motor Pin definition
+const unsigned int MOTOR_IN1 = DC_MOTOR_PIN1;
+const unsigned int MOTOR_IN2 = DC_MOTOR_PIN2;
+const unsigned int MOTOR_EN = DC_MOTOR_ENABLE;
+
+// Create one rearMotor instance.
+L298N rearMotor(MOTOR_EN, MOTOR_IN1, MOTOR_IN2);
+
+
+// Servo
+Servo steering;
+Servo gripper;
+// Servo elbow;
+Servo shoulder;
+Servo waist;
+
+// int steeringPin = STEERING_SERVO_PIN;
+// int gripperPin = GRIPPER_PICKER;
+// int elbowPin = GRIPPER_ELBOW;
+// int shoulderPin = GRIPPER_SHOULDER;
+// int waistPin = GRIPPER_SHOULDER;
+
+
+#define LED 2
+
+
+void printSomeInfo();
+
+// void pickBlock(){
+//   // pick an item
+//   waist.write(0);
+//   delay(500);
+//   shoulder.write(180);
+//   delay(500);
+//   gripper.write(0);
+//   delay(500);
+// }
+
+// void dropBlock(){
+//   // drop an item
+//   shoulder.write(90); // raise item
+//   delay(500);
+//   gripper.write(120); // open gripper
+//   delay(500);
+
+// }
+
+void setup()
+{
+  // Used to display information
+  Serial.begin(115200);
+  pinMode(LED, OUTPUT);
+
+//   steering.attach(steeringPin);
+//   gripper.attach(gripperPin);
+//   // elbow.attach(elbowPin);
+//   shoulder.attach(shoulderPin);
+//   waist.attach(waistPin);
+
+  // Wait for Serial Monitor to be opened
+  while (!Serial)
+  {
+    //do nothing
+  }
+
+  //  initial speed and Position
+  rearMotor.setSpeed(120);
+  Serial.println("Moving servos to initial positions...");
+//   steering.write(85);  // Move steering servo to 80 degrees
+//   gripper.write(120);   // Move gripper servo to 120 degrees
+//   // elbow.write(0);    // Move elbow servo to 120 degrees
+//   shoulder.write(90);  // Move shoulder servo to 60 degrees
+//   waist.write(90);     // Move waist servo to 90 degrees
+//   delay(1000);         // Wait for 2 seconds
 }
 
-void loop() {
-    // Move to the middle of the arena
-    rearMotor.forward(255);  // Move forward at full speed
-    delay(2000);             // Adjust delay based on distance to middle
-    rearMotor.stop();        // Stop the motor
+void loop()
+{
+  digitalWrite(LED, HIGH);
+  delay(500);
+  digitalWrite(LED, LOW);
+  delay(500);
+  printSomeInfo();
 
-    // Collect 6 red blocks
-    for (int i = 0; i < 6; i++) {
-        if (ultrasonicSensor.getDistance() < 20) {  // If block is within 20cm
-            gripper.open();                        // Open the gripper
-            delay(500);                            // Wait for gripper to open
-            gripper.close();                       // Close the gripper to grip the block
-            delay(500);                            // Wait for gripper to close
-            rearMotor.backward(255);               // Move back to Hospital
-            delay(1000);                           // Adjust delay based on distance
-            rearMotor.stop();                      // Stop the motor
-            gripper.open();                        // Release the block
-            delay(500);                            // Wait for gripper to open
-            rearMotor.forward(255);                // Return to middle
-            delay(1000);                           // Adjust delay based on distance
-            rearMotor.stop();                      // Stop the motor
-        }
-    }
 
-    // Move to the start arena
-    steering.setAngle(180);  // Turn left (adjust angle as needed)
-    delay(500);              // Wait for the turn to complete
-    rearMotor.forward(255);  // Move forward
-    delay(1000);             // Adjust delay based on distance
-    rearMotor.stop();        // Stop the motor
+  rearMotor.forward();
+  delay(5000);
+  rearMotor.backward();
+  delay(3000);
+  rearMotor.stop();
+  delay(1000);
+  printSomeInfo();
 
-    // Collect 4 green blocks
-    for (int i = 0; i < 4; i++) {
-        if (colorSensor.getColor() == "Green") {   // If block is green
-            gripper.open();                        // Open the gripper
-            delay(500);                            // Wait for gripper to open
-            gripper.close();                       // Close the gripper to grip the block
-            delay(500);                            // Wait for gripper to close
-            rearMotor.backward(255);               // Move back to Refuge
-            delay(1000);                           // Adjust delay based on distance
-            rearMotor.stop();                      // Stop the motor
-            gripper.open();                        // Release the block
-            delay(500);                            // Wait for gripper to open
-            rearMotor.forward(255);                // Return to start arena
-            delay(1000);                           // Adjust delay based on distance
-            rearMotor.stop();                      // Stop the motor
-        }
-    }
+}
 
-    // End of mission
-    rearMotor.stop();
-    while (true);  // Stop the robot
+/*
+Print some informations in Serial Monitor
+*/
+void printSomeInfo()
+{
+  Serial.print("rearMotor is moving = ");
+  Serial.print(rearMotor.isMoving());
+  Serial.print(" at speed = ");
+  Serial.println(rearMotor.getSpeed());
+  Serial.print("Servo is moving = ");
+  Serial.print(steering.read());
+  Serial.print(" at speed = ");
+  Serial.println(steering.readTicks());
 }
