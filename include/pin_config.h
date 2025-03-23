@@ -22,6 +22,4 @@
 
 #define STEERING_SERVO_PIN 27
 
-void initializePins();
-
 #endif
