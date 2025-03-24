@@ -2,10 +2,11 @@
 
 #include <ESP32Servo.h>
 
-Servo gripper,shoulder,steering;      // Create a servo object
+Servo gripper,shoulder,steering, waist;      // Create a servo object
 int gripperPin = 26;   // Servo control pin
 int shoulderPin =25;
 int steeringPin = 27;
+int waistPin = 32;
 int minAngle1 = 0;   // Minimum angle
 int maxAngle1 = 160; // Maximum angle
 int stepDelay = 15; // Delay between steps (milliseconds)
@@ -15,16 +16,23 @@ int IN1= 22;
 int IN2 =23;
 int en=21;
 
-void setup() {
+void robotDefault(){
   gripper.attach(gripperPin);  // Attaches the servo to the specified pin
   shoulder.attach(shoulderPin);
   steering.attach(steeringPin);
+  waist.attach(waistPin);
   Serial.begin(9600);        // Initialize serial communication
 
-  steering.write(85);
+  steering.write(80);
   gripper.write(120);
+  waist.write(90);
   pinMode(IN1,OUTPUT);
   pinMode(IN2,OUTPUT);
+}
+
+void setup() {
+  robotDefault();
+
 }
 
 void open() {
@@ -47,19 +55,32 @@ void close(){
   
   delay(500);  // Pause at min position
 }
-void extender_up() {
+void extender_up(int step =2) {
   Serial.println("Sweeping from max to min");
-  for (int angle = maxAngle2; angle >= minAngle2; angle--) {
+  for (int angle = maxAngle2; angle >= minAngle2; angle-= step) {
    shoulder.write(angle);
     delay(stepDelay);
   }
   
   delay(500);
 }
-void extender_down(){
+void waist_turn(int target, int step = 2 ){
   // Sweep from min to max
   Serial.println("Sweeping from min to max");
-  for (int angle = minAngle1; angle <= maxAngle1; angle++) {
+  for (int angle = 0; angle <= target; angle += step) {
+    waist.write(angle);
+    delay(stepDelay);
+  } 
+  
+  delay(500);  // Pause at max position
+  
+  // Sweep from max to min
+    // Pause at min position
+}
+void extender_down(int step = 2) { 
+  // Sweep from min to max
+  Serial.println("Sweeping from min to max");
+  for (int angle = minAngle1; angle <= maxAngle1; angle += step) {
     shoulder.write(angle);
     delay(stepDelay);
   }
@@ -94,39 +115,25 @@ void stop(){
     analogWrite(en,150);
     digitalWrite(IN2,LOW);
     digitalWrite(IN1,LOW);
-    }
-void loop(){
-forward();
-delay(300);
-stop();
-delay(500);
-pickblock_drop();
-delay(500);
-backward();
-delay(300);
-
-steering.write(30); // turn left
-delay(500);
-forward(200);
-delay(1000);
-stop();
-delay(500);
-open();
 }
-void green_Pick(){
-  forward();
-  delay(200);
-  stop();
-  delay(500);
-  pickblock_drop();
-  delay(500);
-  backward();
-  delay(300);
-  steering.write(115); // turn left
-  delay(500);
-  forward(200);
-  delay(1000);
-  stop();
+void loop(){
+ forward();
+ delay(1000);
+ backward();
+ delay(500);
+ stop();
+  delay(2000);
+  extender_down();
   delay(500);
   open();
-  }
+  delay(200);
+  close();
+  delay(500);
+  extender_up();
+  delay(500);
+  open();
+  delay(500);
+
+
+
+}
