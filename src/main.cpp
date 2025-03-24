@@ -113,3 +113,20 @@ stop();
 delay(500);
 open();
 }
+void green_Pick(){
+  forward();
+  delay(200);
+  stop();
+  delay(500);
+  pickblock_drop();
+  delay(500);
+  backward();
+  delay(300);
+  steering.write(115); // turn left
+  delay(500);
+  forward(200);
+  delay(1000);
+  stop();
+  delay(500);
+  open();
+  }
